@@ -29,9 +29,10 @@ idea {
 //Dependencies
 repositories {
     jcenter()
+    mavenLocal()
 }
 dependencies {
-    compile 'io.ratpack:ratpack-guice:1.4.1'
+    compile 'io.ratpack:ratpack-guice:1.5.0-SNAPSHOT'
     compile 'org.slf4j:slf4j-api:1.7.13'
     compile 'io.zipkin.brave:brave-http:4.0.0'
     testCompile 'junit:junit:4.12'
@@ -42,7 +43,7 @@ dependencies {
     testCompile 'org.objenesis:objenesis:2.2'
     testCompile 'com.nagternal:spock-genesis:0.4.0'
     testCompile 'org.slf4j:slf4j-nop:1.7.21'
-    testCompile 'io.ratpack:ratpack-groovy-test:1.4.1'
+    testCompile 'io.ratpack:ratpack-groovy-test:1.5.0-SNAPSHOT'
 }
 
 //Artifacts

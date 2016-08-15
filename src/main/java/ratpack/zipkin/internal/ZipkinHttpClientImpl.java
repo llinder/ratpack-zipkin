@@ -17,12 +17,15 @@ package ratpack.zipkin.internal;
 
 import com.github.kristofa.brave.ClientRequestInterceptor;
 import com.github.kristofa.brave.ClientResponseInterceptor;
+import io.netty.handler.codec.http.DefaultHttpHeaders;
+import io.netty.handler.codec.http.HttpHeaders;
 import ratpack.exec.Promise;
 import ratpack.func.Action;
 import ratpack.http.HttpMethod;
 import ratpack.http.client.HttpClient;
 import ratpack.http.client.ReceivedResponse;
 import ratpack.http.client.RequestSpec;
+import ratpack.http.client.SentRequest;
 import ratpack.zipkin.ZipkinHttpClient;
 
 import javax.inject.Inject;
@@ -55,7 +58,7 @@ public class ZipkinHttpClientImpl implements ZipkinHttpClient {
   public Promise<ReceivedResponse> get(final URI uri, final Action<? super RequestSpec> requestConfigurer) {
     return request(uri, requestConfigurer.append(requestSpec ->
         requestInterceptor
-            .handle(requestAdapterFactory.createAdaptor(requestSpec, HttpMethod.GET.getName()))
+            .handle(requestAdapterFactory.createAdaptor(new SentRequestAdapter(requestSpec, HttpMethod.GET.getName())))
     ));
   }
 
@@ -64,7 +67,7 @@ public class ZipkinHttpClientImpl implements ZipkinHttpClient {
   public Promise<ReceivedResponse> post(final URI uri, final Action<? super RequestSpec> requestConfigurer) {
     return request(uri, requestConfigurer.append(requestSpec ->
         requestInterceptor
-            .handle(requestAdapterFactory.createAdaptor(requestSpec, HttpMethod.POST.getName()))
+            .handle(requestAdapterFactory.createAdaptor(new SentRequestAdapter(requestSpec, HttpMethod.POST.getName())))
     ));
   }
 
@@ -72,7 +75,7 @@ public class ZipkinHttpClientImpl implements ZipkinHttpClient {
   public Promise<ReceivedResponse> put(final URI uri, final Action<? super RequestSpec> requestConfigurer) {
     return request(uri, requestConfigurer.append(requestSpec ->
         requestInterceptor
-            .handle(requestAdapterFactory.createAdaptor(requestSpec.put(), HttpMethod.PUT.getName()))
+            .handle(requestAdapterFactory.createAdaptor(new SentRequestAdapter(requestSpec.put(), HttpMethod.PUT.getName())))
     ));
   }
 
@@ -80,7 +83,7 @@ public class ZipkinHttpClientImpl implements ZipkinHttpClient {
   public Promise<ReceivedResponse> delete(final URI uri, final Action<? super RequestSpec> requestConfigurer) {
     return request(uri, requestConfigurer.append(requestSpec ->
         requestInterceptor
-            .handle(requestAdapterFactory.createAdaptor(requestSpec.delete(), HttpMethod.DELETE.getName()))
+            .handle(requestAdapterFactory.createAdaptor(new SentRequestAdapter(requestSpec.delete(), HttpMethod.DELETE.getName())))
     ));
   }
 
@@ -88,7 +91,7 @@ public class ZipkinHttpClientImpl implements ZipkinHttpClient {
   public Promise<ReceivedResponse> patch(final URI uri, final Action<? super RequestSpec> requestConfigurer) {
     return request(uri, requestConfigurer.append(requestSpec ->
         requestInterceptor
-            .handle(requestAdapterFactory.createAdaptor(requestSpec.patch(), HttpMethod.PATCH.getName()))
+            .handle(requestAdapterFactory.createAdaptor(new SentRequestAdapter(requestSpec.patch(), HttpMethod.PATCH.getName())))
     ));
   }
 
@@ -96,7 +99,7 @@ public class ZipkinHttpClientImpl implements ZipkinHttpClient {
   public Promise<ReceivedResponse> head(final URI uri, final Action<? super RequestSpec> requestConfigurer) {
     return request(uri, requestConfigurer.append(requestSpec ->
         requestInterceptor
-            .handle(requestAdapterFactory.createAdaptor(requestSpec.head(), HttpMethod.HEAD.getName()))
+            .handle(requestAdapterFactory.createAdaptor(new SentRequestAdapter(requestSpec.head(), HttpMethod.HEAD.getName())))
     ));
   }
 
@@ -104,7 +107,7 @@ public class ZipkinHttpClientImpl implements ZipkinHttpClient {
   public Promise<ReceivedResponse> options(final URI uri, final Action<? super RequestSpec> requestConfigurer) {
     return request(uri, requestConfigurer.append(requestSpec ->
         requestInterceptor
-            .handle(requestAdapterFactory.createAdaptor(requestSpec.options(), HttpMethod.OPTIONS.getName()))
+            .handle(requestAdapterFactory.createAdaptor(new SentRequestAdapter(requestSpec.options(), HttpMethod.OPTIONS.getName())))
     ));
   }
 
@@ -115,4 +118,31 @@ public class ZipkinHttpClientImpl implements ZipkinHttpClient {
         .wiretap(receivedResponseResult ->
             responseInterceptor.handle(responseAdapterFactory.createAdapter(receivedResponseResult.getValue())));
   }
-}
+
+  private static class SentRequestAdapter implements SentRequest {
+    private final RequestSpec requestSpec;
+    private final String method;
+
+    SentRequestAdapter(final RequestSpec requestSpec, final String method) {
+      this.requestSpec = requestSpec;
+      this.method = method;
+    }
+
+    @Override
+    public String method() {
+      return method;
+    }
+
+    @Override
+    public String uri() {
+      return requestSpec.getUri().toString();
+    }
+
+    @Override
+    public HttpHeaders requestHeaders() {
+      HttpHeaders httpHeaders = new DefaultHttpHeaders();
+      requestSpec.getHeaders().asMultiValueMap().forEach(httpHeaders::add);
+      return httpHeaders;
+    }
+  }
+ }
