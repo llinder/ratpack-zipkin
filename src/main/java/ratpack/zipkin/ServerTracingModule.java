@@ -41,6 +41,7 @@ import static com.google.inject.Scopes.SINGLETON;
  * Module for ZipKin distributed tracing.
  */
 public class ServerTracingModule extends ConfigurableModule<ServerTracingModule.Config> {
+  private static final Logger logger = LoggerFactory.getLogger(ServerTracingModule.class);
   @Override
   protected void configure() {
     bind(ServerRequestAdapterFactory.class).in(SINGLETON);
