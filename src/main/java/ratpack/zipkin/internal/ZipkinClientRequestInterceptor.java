@@ -18,6 +18,7 @@ package ratpack.zipkin.internal;
 import com.github.kristofa.brave.ClientRequestInterceptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ratpack.exec.Execution;
 import ratpack.http.client.HttpClientRequestInterceptor;
 import ratpack.http.client.SentRequest;
 
@@ -36,7 +37,7 @@ public class ZipkinClientRequestInterceptor implements HttpClientRequestIntercep
   }
 
   @Override
-  public void intercept(final SentRequest request) {
+  public void intercept(final SentRequest request, final Execution execution) {
     requestInterceptor.handle(requestAdapterFactory.createAdaptor(request));
   }
 }

@@ -16,6 +16,7 @@
 package ratpack.zipkin.internal;
 
 import com.github.kristofa.brave.ClientResponseInterceptor;
+import ratpack.exec.Execution;
 import ratpack.http.client.HttpClientResponseInterceptor;
 import ratpack.http.client.ReceivedResponse;
 
@@ -33,7 +34,7 @@ public class ZipkinClientResponseInterceptor implements HttpClientResponseInterc
   }
 
   @Override
-  public void intercept(final ReceivedResponse receivedResponse) {
+  public void intercept(final ReceivedResponse receivedResponse, final Execution execution) {
     responseInterceptor.handle(responseAdapterFactory.createAdapter(receivedResponse));
   }
 }

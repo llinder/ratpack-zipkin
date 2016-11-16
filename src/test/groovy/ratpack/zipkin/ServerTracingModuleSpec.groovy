@@ -20,6 +20,7 @@ import com.github.kristofa.brave.SpanCollector
 import com.github.kristofa.brave.http.SpanNameProvider
 import com.twitter.zipkin.gen.Span
 import org.assertj.core.util.Lists
+import org.junit.Ignore
 import ratpack.groovy.test.embed.GroovyEmbeddedApp
 import ratpack.guice.Guice
 import spock.lang.Specification

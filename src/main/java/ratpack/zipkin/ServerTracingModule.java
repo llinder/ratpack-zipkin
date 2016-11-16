@@ -23,6 +23,7 @@ import com.google.inject.Provides;
 import com.google.inject.multibindings.Multibinder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ratpack.exec.Execution;
 import ratpack.guice.ConfigurableModule;
 import ratpack.handling.HandlerDecorator;
 import ratpack.http.client.HttpClientRequestInterceptor;
@@ -50,11 +51,11 @@ public class ServerTracingModule extends ConfigurableModule<ServerTracingModule.
     Provider<ServerTracingHandler> serverTracingHandlerProviderProvider = getProvider(ServerTracingHandler.class);
 
     Multibinder.newSetBinder(binder(), HttpClientRequestInterceptor.class)
-               .addBinding().toInstance(req -> logger.info("Request intercepted: {}", req));
+               .addBinding().toInstance((req, execution) -> logger.info("Request intercepted: {}, execution: {}", req, execution));
 //    Multibinder.newSetBinder(binder(), HttpClientRequestInterceptor.class)
 //               .addBinding().to(ZipkinClientRequestInterceptor.class);
     Multibinder.newSetBinder(binder(), HttpClientResponseInterceptor.class)
-               .addBinding().toInstance(res -> logger.info("Response intercepted: {}", res));
+               .addBinding().toInstance((res, execution) -> logger.info("Response intercepted: {}, execution: {}", res,execution));
 //    Multibinder.newSetBinder(binder(), HttpClientResponseInterceptor.class)
 //               .addBinding().to(ZipkinClientResponseInterceptor.class);
     bind(ClientRequestAdapterFactory.class).in(SINGLETON);
