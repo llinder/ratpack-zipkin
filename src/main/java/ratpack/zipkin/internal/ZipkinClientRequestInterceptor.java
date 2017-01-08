@@ -28,14 +28,11 @@ import javax.inject.Inject;
 
 public class ZipkinClientRequestInterceptor implements HttpClientRequestInterceptor {
   private final ClientRequestAdapterFactory requestAdapterFactory;
-  private final ClientRequestInterceptor requestInterceptor;
   private static final Logger logger = LoggerFactory.getLogger(ZipkinClientRequestInterceptor.class);
 
   @Inject
-  public ZipkinClientRequestInterceptor(final ClientRequestAdapterFactory requestAdapterFactory,
-                                        final ClientRequestInterceptor requestInterceptor) {
+  public ZipkinClientRequestInterceptor(final ClientRequestAdapterFactory requestAdapterFactory) {
     this.requestAdapterFactory = requestAdapterFactory;
-    this.requestInterceptor = requestInterceptor;
   }
 
   @Override

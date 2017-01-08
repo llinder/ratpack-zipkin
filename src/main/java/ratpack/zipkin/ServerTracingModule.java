@@ -50,14 +50,14 @@ public class ServerTracingModule extends ConfigurableModule<ServerTracingModule.
     bind(ServerTracingHandler.class).to(DefaultServerTracingHandler.class);
     Provider<ServerTracingHandler> serverTracingHandlerProviderProvider = getProvider(ServerTracingHandler.class);
 
-    Multibinder.newSetBinder(binder(), HttpClientRequestInterceptor.class)
-               .addBinding().toInstance((req, execution) -> logger.info("Request intercepted: {}, execution: {}", req, execution));
 //    Multibinder.newSetBinder(binder(), HttpClientRequestInterceptor.class)
-//               .addBinding().to(ZipkinClientRequestInterceptor.class);
-    Multibinder.newSetBinder(binder(), HttpClientResponseInterceptor.class)
-               .addBinding().toInstance((res, execution) -> logger.info("Response intercepted: {}, execution: {}", res, execution));
+//               .addBinding().toInstance((req, execution) -> logger.info("Request intercepted: {}, execution: {}", req, execution));
+    Multibinder.newSetBinder(binder(), HttpClientRequestInterceptor.class)
+               .addBinding().to(ZipkinClientRequestInterceptor.class);
 //    Multibinder.newSetBinder(binder(), HttpClientResponseInterceptor.class)
-//               .addBinding().to(ZipkinClientResponseInterceptor.class);
+//               .addBinding().toInstance((res, execution) -> logger.info("Response intercepted: {}, execution: {}", res, execution));
+    Multibinder.newSetBinder(binder(), HttpClientResponseInterceptor.class)
+               .addBinding().to(ZipkinClientResponseInterceptor.class);
     bind(ClientRequestAdapterFactory.class).in(SINGLETON);
     bind(ClientResponseAdapterFactory.class).in(SINGLETON);
 
