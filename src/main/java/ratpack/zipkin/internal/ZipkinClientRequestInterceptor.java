@@ -15,7 +15,9 @@
  */
 package ratpack.zipkin.internal;
 
+import com.github.kristofa.brave.AnnotationSubmitter;
 import com.github.kristofa.brave.ClientRequestInterceptor;
+import com.github.kristofa.brave.ClientTracer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ratpack.exec.Execution;
@@ -23,6 +25,7 @@ import ratpack.http.client.HttpClientRequestInterceptor;
 import ratpack.http.client.SentRequest;
 
 import javax.inject.Inject;
+import java.util.Random;
 
 public class ZipkinClientRequestInterceptor implements HttpClientRequestInterceptor {
   private final ClientRequestAdapterFactory requestAdapterFactory;
@@ -38,6 +41,17 @@ public class ZipkinClientRequestInterceptor implements HttpClientRequestIntercep
 
   @Override
   public void intercept(final SentRequest request, final Execution execution) {
+    //need a request interceptor that can take a ClientTracer constructor param
+    //need to construct a ClientTracer with a "state" that is backed by
+    //the Execution
+    ClientTracer clientTracer = ClientTracer.builder()
+                                   .state(new RatpackServerClientLocalSpanState("foo", 0, 0, ()
+                                       -> execution, null))
+                                   .randomGenerator(new Random())
+                                   .reporter()
+                                   .traceSampler().build();
+    ClientRequestInterceptor interceptor = new ClientRequestInterceptor(clientTracer);
+
     requestInterceptor.handle(requestAdapterFactory.createAdaptor(request));
   }
 }

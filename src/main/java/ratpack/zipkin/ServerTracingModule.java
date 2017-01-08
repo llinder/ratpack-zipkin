@@ -55,7 +55,7 @@ public class ServerTracingModule extends ConfigurableModule<ServerTracingModule.
 //    Multibinder.newSetBinder(binder(), HttpClientRequestInterceptor.class)
 //               .addBinding().to(ZipkinClientRequestInterceptor.class);
     Multibinder.newSetBinder(binder(), HttpClientResponseInterceptor.class)
-               .addBinding().toInstance((res, execution) -> logger.info("Response intercepted: {}, execution: {}", res,execution));
+               .addBinding().toInstance((res, execution) -> logger.info("Response intercepted: {}, execution: {}", res, execution));
 //    Multibinder.newSetBinder(binder(), HttpClientResponseInterceptor.class)
 //               .addBinding().to(ZipkinClientResponseInterceptor.class);
     bind(ClientRequestAdapterFactory.class).in(SINGLETON);

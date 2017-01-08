@@ -26,6 +26,7 @@ import ratpack.guice.Guice
 import spock.lang.Specification
 import zipkin.reporter.Reporter
 
+@Ignore
 class ServerTracingModuleSpec extends Specification {
 
 
