@@ -35,7 +35,7 @@ import ratpack.zipkin.internal.RatpackCurrentTraceContext;
 import ratpack.zipkin.internal.ZipkinHttpClientImpl;
 import zipkin2.Endpoint;
 import zipkin2.Span;
-import zipkin.reporter.Reporter;
+import zipkin2.reporter.Reporter;
 
 import java.net.InetAddress;
 
@@ -88,7 +88,7 @@ public class ServerTracingModule extends ConfigurableModule<ServerTracingModule.
    */
   public static class Config {
     private String serviceName = "unknown";
-    private Reporter<Span> spanReporter = (Span s) -> {};
+    private Reporter<Span> spanReporter = Reporter.NOOP;
     private Sampler sampler = Sampler.NEVER_SAMPLE;
     private HttpSampler serverSampler = HttpSampler.TRACE_ID;
     private HttpSampler clientSampler = HttpSampler.TRACE_ID;
@@ -118,6 +118,25 @@ public class ServerTracingModule extends ConfigurableModule<ServerTracingModule.
     public Config spanReporter(final Reporter<Span> reporter) {
       this.spanReporter = reporter;
       return this;
+    }
+
+    /** @deprecated please use {@link #spanReporter(Reporter)} */
+    // Until this is removed, we need a mandatory dep on io.zipkin.reporter:zipkin-reporter
+    // due to overloading requiring access to all overloaded types
+    @Deprecated
+    public Config spanReporter(final zipkin.reporter.Reporter<zipkin.Span> reporter) {
+      if (reporter == zipkin.reporter.Reporter.NOOP) {
+        return spanReporter(Reporter.NOOP);
+      }
+      return spanReporter(new Reporter<zipkin2.Span>() {
+        @Override public void report(zipkin2.Span span) {
+          reporter.report(zipkin.internal.V2SpanConverter.toSpan(span));
+        }
+
+        @Override public String toString() {
+          return reporter.toString();
+        }
+      });
     }
 
     /**
