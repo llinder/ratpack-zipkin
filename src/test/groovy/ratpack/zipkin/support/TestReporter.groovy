@@ -2,6 +2,7 @@ package ratpack.zipkin.support
 
 import zipkin2.Span
 import zipkin2.reporter.Reporter
+import zipkin.reporter.Reporter
 
 import java.util.concurrent.ConcurrentLinkedDeque
 

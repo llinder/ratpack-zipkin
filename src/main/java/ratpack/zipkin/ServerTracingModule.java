@@ -36,6 +36,7 @@ import ratpack.zipkin.internal.ZipkinHttpClientImpl;
 import zipkin2.Endpoint;
 import zipkin2.Span;
 import zipkin2.reporter.Reporter;
+import zipkin.reporter.Reporter;
 
 import java.net.InetAddress;
 
@@ -88,7 +89,7 @@ public class ServerTracingModule extends ConfigurableModule<ServerTracingModule.
    */
   public static class Config {
     private String serviceName = "unknown";
-    private Reporter<Span> spanReporter = Reporter.NOOP;
+    private Reporter<Span> spanReporter = (Span s) -> {};
     private Sampler sampler = Sampler.NEVER_SAMPLE;
     private HttpSampler serverSampler = HttpSampler.TRACE_ID;
     private HttpSampler clientSampler = HttpSampler.TRACE_ID;
